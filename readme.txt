@@ -1,3 +1,4 @@
+# 全自动映射框架
 - 再src下建立jdbc.properties
 
 - 每张表只能有一个主键

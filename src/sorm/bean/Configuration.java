@@ -1,8 +1,8 @@
 package sorm.bean;
 /**
- * ¹ÜÀíÅäÖÃĞÅÏ¢
- * °ÑÅäÖÃÎÄ¼şµÄÊôĞÔ¸øÕâ¸öÀà
- * @author ËåºèºÆ
+ * ç®¡ç†é…ç½®ä¿¡æ¯
+ * æŠŠé…ç½®æ–‡ä»¶çš„å±æ€§ç»™è¿™ä¸ªç±»
+ * @author éš‹é¸¿æµ©
  *
  */
 public class Configuration {
@@ -59,7 +59,6 @@ public class Configuration {
 	}
 
 	public Configuration() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getDriver() {

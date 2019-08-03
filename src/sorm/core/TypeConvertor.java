@@ -1,20 +1,20 @@
 package sorm.core;
 /**
- * ¸ºÔğjavaÊı¾İÀàĞÍºÍÊı¾İ¿âÊı¾İÀàĞÍµÄÏà»¥×ª»»
- * @author ËåºèºÆ
+ * è´Ÿè´£javaæ•°æ®ç±»å‹å’Œæ•°æ®åº“æ•°æ®ç±»å‹çš„ç›¸äº’è½¬æ¢
+ * @author éš‹é¸¿æµ©
  *
  */
 public interface TypeConvertor {
 	
 	/**
-	 * ½«Êı¾İ¿âÊı¾İÀàĞÍ×ª»¯ÎªJavaµÄÊı¾İÀàĞÍ
-	 * @param columnType Êı¾İ¿â×Ö¶ÎµÄÊı¾İÀàĞÍ
-	 * @return JavaµÄÊı¾İÀàĞÍ
+	 * å°†æ•°æ®åº“æ•°æ®ç±»å‹è½¬åŒ–ä¸ºJavaçš„æ•°æ®ç±»å‹
+	 * @param columnType æ•°æ®åº“å­—æ®µçš„æ•°æ®ç±»å‹
+	 * @return Javaçš„æ•°æ®ç±»å‹
 	 */
 	public String datebaseType2JavaType(String columnType);
 	
 	/**
-	 * ½«javaÊı¾İÀàĞÍ×ª»¯³ÉÊı¾İ¿âÊı¾İÀàĞÍ
+	 * å°†javaæ•°æ®ç±»å‹è½¬åŒ–æˆæ•°æ®åº“æ•°æ®ç±»å‹
 	 * @param javaDataType
 	 * @return
 	 */

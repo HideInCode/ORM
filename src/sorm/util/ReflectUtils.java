@@ -4,21 +4,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * ·â×°ÁË·´Éä³£ÓÃµÄ²Ù×÷
- * @author ËåºèºÆ
+ * å°è£…äº†åå°„å¸¸ç”¨çš„æ“ä½œ
+ * @author éš‹é¸¿æµ©
  *
  */
 public class ReflectUtils {
 	
 	/**
-	 * µ÷ÓÃobj¶ÔÏó¶ÔÓ¦µÄÊôĞÔÃûµÄget·½·¨
+	 * è°ƒç”¨objå¯¹è±¡å¯¹åº”çš„å±æ€§åçš„getæ–¹æ³•
 	 * @param c
 	 * @param fieldname
 	 * @param obj
 	 * @return
 	 */
 	public static Object invokeGet(String fieldname, Object obj) {
-		//Í¨¹ı·´Éä»úÖÆ µ÷ÓÃÊôĞÔ¶ÔÓ¦µÄset get·½·¨
+		//é€šè¿‡åå°„æœºåˆ¶ è°ƒç”¨å±æ€§å¯¹åº”çš„set getæ–¹æ³•
 				try {
 					Class c = obj.getClass();
 					Method m = c.getDeclaredMethod("get"+StringUtils.firstChar2UpperCase(fieldname), null);

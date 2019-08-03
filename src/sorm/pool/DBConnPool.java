@@ -8,36 +8,36 @@ import java.util.List;
 import sorm.core.DBManager;
 
 /**
- * Á¬½Ó³ØµÄÀà
- * @author ËåºèºÆ
+ * è¿æ¥æ± çš„ç±»
+ * @author éš‹é¸¿æµ©
  *
  */
 public class DBConnPool {
 	/**
-	 * ½¨Á¢Á¬½Ó³Ø
+	 * å»ºç«‹è¿æ¥æ± 
 	 */
 	public static List<Connection> pool;
 	/**
-	 * ×î´óÁ¬½ÓÊı
+	 * æœ€å¤§è¿æ¥æ•°
 	 */
 	public static final int POOL_MAX_SIZE = DBManager.getConf().getPoolMaxSize();
 	/**
-	 * ×îĞ¡Á¬½ÓÊı
+	 * æœ€å°è¿æ¥æ•°
 	 */
 	public static final int POOL_MIN_SIZE = DBManager.getConf().getPoolMinSize();
 	
 	
 	public void initPool() {
 		if(pool == null) {
-			pool = new ArrayList<Connection>();
+			pool = new ArrayList<>();
 		}
 		while(pool.size()<DBConnPool.POOL_MIN_SIZE) {
 			pool.add(DBManager.createConn());
-			System.out.println("Á¬½Ó³ØÊı"+pool.size());
+			System.out.println("è¿æ¥æ± æ•°"+pool.size());
 		}
 	}
 	/**
-	 * ´Ó³ØÖĞÈ¡³öÒ»¸öÁ¬½Ó
+	 * ä»æ± ä¸­å–å‡ºä¸€ä¸ªè¿æ¥
 	 * @return
 	 */
 	public synchronized Connection getConnection() {
@@ -56,8 +56,7 @@ public class DBConnPool {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("å…³é—­å¤±è´¥");
 			}
 		}
 		

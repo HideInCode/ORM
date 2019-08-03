@@ -1,19 +1,18 @@
 package sorm.bean;
 /**
- * javabeanµÄsetºÍget·½·¨
- * @author ËåºèºÆ
+ * javabeançš„setå’Œgetæ–¹æ³•
+ * @author éš‹é¸¿æµ©
  *
  */
 public class JavaFieldGetSet {
 	/**
-	 * ÊôĞÔµÄÔ´ÂëĞÅÏ¢ :private int userId
+	 * å±æ€§çš„æºç ä¿¡æ¯ :private int userId
 	 */
 	private String fieldInfo;
 	private String getInfo;
 	private String setInfo;
 	
 	public JavaFieldGetSet() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public JavaFieldGetSet(String fieldInfo, String getInfo, String setInfo) {

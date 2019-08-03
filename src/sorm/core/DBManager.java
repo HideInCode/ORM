@@ -12,94 +12,90 @@ import sorm.bean.Configuration;
 import sorm.pool.DBConnPool;
 
 /**
- * ¸ù¾İÅäÖÃĞÅÏ¢,Î¬³ÖÁ¬½Ó¶ÔÏóµÄ¹ÜÀí
- * ÕâÀï°ÑÅäÖÃÎÄ¼şÍ¨¹ıÕâ¸öÀàÁ¬½Ó
- * @author ËåºèºÆ
+ * æ ¹æ®é…ç½®ä¿¡æ¯,ç»´æŒè¿æ¥å¯¹è±¡çš„ç®¡ç†
+ * è¿™é‡ŒæŠŠé…ç½®æ–‡ä»¶é€šè¿‡è¿™ä¸ªç±»è¿æ¥
  *
+ * @author éš‹é¸¿æµ©
  */
 public class DBManager {
-	private static Configuration conf;
-	private static DBConnPool dbcp;
-	
-	static {//¾²Ì¬´úÂë¿éÖ»Ö´ĞĞÒ»´Î
-		Properties pros = new Properties();
-		try {
-			pros.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("jdbc.properties"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		conf = new Configuration();
-		conf.setDriver(pros.getProperty("driver"));
-		conf.setPoPackage(pros.getProperty("poPackage"));
-		conf.setPwd(pros.getProperty("pwd"));
-		conf.setSrcPath(pros.getProperty("srcPath"));
-		conf.setUrl(pros.getProperty("url"));
-		conf.setUser(pros.getProperty("user"));
-		conf.setUsingDB(pros.getProperty("usingDB"));
-		conf.setQueryClass(pros.getProperty("queryClass"));
-		conf.setPoolMaxSize(Integer.parseInt(pros.getProperty("poolMaxSize")));
-		conf.setPoolMinSize(Integer.parseInt(pros.getProperty("poolMinSize")));
-		
-		//¼ÓÔØ±íµÄĞÅÏ¢
-		System.out.println(TableContext.class);
-	}
-	
-	public static Connection getConn(){
-		if(dbcp == null) {
-			dbcp = new DBConnPool();
-		}
-		return dbcp.getConnection();
-	}
-	
-	public static Connection createConn(){
-		try {
-			Class.forName(conf.getDriver());
-			return DriverManager.getConnection(conf.getUrl(),conf.getUser(),conf.getPwd());
-	
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public static void close(ResultSet rs,Statement ps,Connection conn){
-		try {
-			if(rs!=null){
-				rs.close();
-			}
-		} 
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			if(ps!=null){
-				ps.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		dbcp.close(conn);
-		}
-		public static void close(Statement ps,Connection conn){
-			try {
-					if(ps!=null){
-						ps.close();
-					}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-//				if(conn!=null){
-//					conn.close();
-//				}
-				dbcp.close(conn);
-		
-		}
-		public static void close(Connection conn){
-			dbcp.close(conn);
-		}
-		
-		public static Configuration getConf(){
-			return conf;
-		}
+    private static Configuration conf;
+    private static DBConnPool pool;
+
+
+    static {//é™æ€ä»£ç å—åªæ‰§è¡Œä¸€æ¬¡
+        Properties pros = new Properties();
+        try {
+            pros.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("jdbc.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        conf = new Configuration();
+        conf.setDriver(pros.getProperty("driver"));
+        conf.setPoPackage(pros.getProperty("poPackage"));
+        conf.setPwd(pros.getProperty("pwd"));
+        conf.setSrcPath(pros.getProperty("srcPath"));
+        conf.setUrl(pros.getProperty("url"));
+        conf.setUser(pros.getProperty("user"));
+        conf.setUsingDB(pros.getProperty("usingDB"));
+        conf.setQueryClass(pros.getProperty("queryClass"));
+        conf.setPoolMaxSize(Integer.parseInt(pros.getProperty("poolMaxSize")));
+        conf.setPoolMinSize(Integer.parseInt(pros.getProperty("poolMinSize")));
+
+        //åŠ è½½è¡¨çš„ä¿¡æ¯
+        System.out.println(TableContext.class);
+    }
+
+    public static Configuration getConf() {
+        return conf;
+    }
+
+    public static Connection getConn() {
+        if (pool == null) {
+            pool = new DBConnPool();
+        }
+        return pool.getConnection();
+    }
+
+    public static Connection createConn() {
+        try {
+            Class.forName(conf.getDriver());
+            return DriverManager.getConnection(conf.getUrl(), conf.getUser(), conf.getPwd());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void close(ResultSet rs, Statement ps, Connection conn) {
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (ps != null) {
+                ps.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        pool.close(conn);
+    }
+
+    public static void close(Statement ps, Connection conn) {
+        try {
+            if (ps != null) {
+                ps.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        pool.close(conn);
+
+    }
+
 }

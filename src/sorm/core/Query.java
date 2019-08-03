@@ -15,274 +15,275 @@ import sorm.util.JDBCUtil;
 import sorm.util.ReflectUtils;
 
 /**
- * ¸ºÔğ²éÑ¯¶ÔÍâÌá¹©ºËĞÄµÄÀà
- * Ä£°å·½·¨Ä£Ê½ÖØ¹¹¹ı
- * @author ËåºèºÆ
+ * è´Ÿè´£æŸ¥è¯¢å¯¹å¤–æä¾›æ ¸å¿ƒçš„ç±»
+ * æ¨¡æ¿æ–¹æ³•æ¨¡å¼é‡æ„è¿‡
  *
+ * @author éš‹é¸¿æµ©
  */
-public abstract class Query implements Cloneable{
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
-	
-	public Object executeQueryTemplate(String sql,Object[] params,Class clazz,CallBack back) {
+public abstract class Query implements Cloneable {
 
 
-		Connection con = DBManager.getConn();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = con.prepareStatement(sql);
-			JDBCUtil.handleParams(ps, params);
-//			System.out.println(ps);
-			rs = ps.executeQuery();
-			
-			
-			//Ö»ĞèÒª¸ÄĞ´ÕâÒ»¸ö²¿·Ö¾ÍºÃÁË
-			return back.doExecute(con, ps, rs);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		} finally {
-			DBManager.close(ps, con);
-		}
-	
-	
-	}
-	
-	/**
-	 * Ö´ĞĞDMLÓï¾ä
-	 * @param sql
-	 * @param params
-	 * @return Ö´ĞĞsqlÓï¾äºóÓ°Ïì¼ÇÂ¼µÄĞĞÊı
-	 */
-	public int executeDML(String sql, Object[] params) {
-
-		Connection con = DBManager.getConn();
-		int count = 0;
-		PreparedStatement ps = null;
-		try {
-			ps = con.prepareStatement(sql);
-			
-			JDBCUtil.handleParams(ps, params);
-			
-			count = ps.executeUpdate();			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(ps, con);
-		}
-		return count;
-	
-	}
-	
-	/**
-	 * ½«¶ÔÏó´æ´¢ µ½Êı¾İ¿âÖĞ
-	 * °Ñ¶ÔÏó
-	 * @param obj Òª´æ´¢µÄ¶ÔÏó
-	 */
-	public void insert(Object obj){
-
-		//obj-->±íÖĞ insert into ±íÃ÷ (id, name,pwd) values (?,?,?)
-		Class c = obj.getClass();
-		TableInfo ti = TableContext.poClassTableMap.get(c);
-		StringBuilder sql = new StringBuilder("insert into "+ti.getName()+" (");
-		Field[] fs = c.getDeclaredFields();
-		List<Object> params = new ArrayList<Object>();//´æ·Å²ÎÊı
-		
-		for(Field elem : fs) {
-			String fieldName = elem.getName();
-			Object fieldValue = ReflectUtils.invokeGet(fieldName, obj);
-			
-			if(fieldValue != null) {
-				sql.append(fieldName+",");
-				params.add(fieldValue);
-			}
-			
-		}
-		
-		sql.setCharAt(sql.length()-1, ')');
-		sql.append("values (");
-		for(int i=0;i<params.size();i++) {
-			sql.append("?,");
-		}
-		sql.setCharAt(sql.length()-1, ')');
-		executeDML(sql.toString(), params.toArray());
-	
-	}
-	
-	/**
-	 * É¾³ıclazzÀà¶ÔÓ¦µÄ±íÖĞµÄ¼ÇÂ¼(Ö¸¶¨Ö÷¼üÖµidµÄ¼ÇÂ¼)
-	 * @param clazz ¸ú±í¶ÔÓ¦µÄÀàµÄ¶ÔÏó
-	 * @param id Ö÷¼üµÄÖµ
-	 */
-	public void delete(Class clazz, Object id){
-
-		//Emp.class,2 --> delete form emp where id =2
-		
-		//Ò»Ö±¶ÔÏóÕÒtableInfo
-		TableInfo ti = TableContext.poClassTableMap.get(clazz);
-		ColumnInfo onlyPriKey = ti.getOnlyPriKey();
-		
-		String sql = "delete from "+ti.getName()+" where "+onlyPriKey.getName()+"=? ";
-		executeDML(sql, new Object[] {id});
-	
-	}
-	
-	/**
-	 * É¾³ıÊı¾İ¿âÖĞµÄ¶ÔÓ¦¼ÇÂ¼ 
-	 * @param obj
-	 */
-	public void delete(Object obj){
-
-		Class clazz = obj.getClass();
-		TableInfo ti = TableContext.poClassTableMap.get(clazz);
-		ColumnInfo onlyPriKey = ti.getOnlyPriKey();
-		
-		//Í¨¹ı·´Éä»úÖÆ µ÷ÓÃÊôĞÔ¶ÔÓ¦µÄset get·½·¨
-	
-		
-		Object priKeyValue = ReflectUtils.invokeGet(onlyPriKey.getName(), obj);
-		delete(clazz, priKeyValue);
-		
-	
-	}
-	
-	/**
-	 * ¸ù¾İ¶ÔÏó¶ÔÓ¦µÄ¼ÇÂ¼,²¢ÇÒÖ»¸üĞÂÖ¸¶¨×Ö¶ÎµÄÖµ
-	 * @param obj
-	 * @param fieldNames
-	 * @return
-	 */
-	public int update(Object obj, String[] fieldNames){
-
-		//obj (name,pwd)-->update tablename set name=?,pwd=? where id=?
-		Class c = obj.getClass();
-		TableInfo ti = TableContext.poClassTableMap.get(c);
-		StringBuilder sql = new StringBuilder("update "+ti.getName()+" set ");
-		List<Object> params = new ArrayList<Object>();//´æ·Å²ÎÊı
-		ColumnInfo priKey = ti.getOnlyPriKey();
-		
-		for(String f : fieldNames) {
-			Object  fvalue = ReflectUtils.invokeGet(f, obj);
-			params.add(fvalue);//¸øÊôĞÔ¸³Öµ
-			sql.append(f+"=?,");
-		}
-		params.add(ReflectUtils.invokeGet(priKey.getName(), obj));
-		
-		sql.setCharAt(sql.length()-1, ' ');
-		sql.append("where ");
-		sql.append(priKey.getName()+"=? ");
-		//System.out.println(sql.toString());
-		return executeDML(sql.toString(), params.toArray());
-	
-	}
-	
-	/**
-	 * ²éÑ¯·µ»Ø¶àĞĞ¼ÇÂ¼ ²¢½«Ã¿ĞĞ¼ÇÂ¼·â×°µ½clazzÖ¸¶¨µÄÀàµÄ¶ÔÏóÖĞÈ¥
-	 * @param sql	²éÑ¯Óï¾ä
-	 * @param clazz	·Ö×°Êı¾İµÄjavabeanµÄ¶ÔÏó
-	 * @param params sqlµÄ²ÎÊı
-	 * @return
-	 */
-	
-	public List queryRows(final String sql, final Class clazz, final Object[] params){
+    public Object executeQueryTemplate(String sql, Object[] params, Class clazz, CallBack back) {
 
 
-		
-		return (List) executeQueryTemplate(sql, params, clazz, new CallBack() {
-			
-			@Override
-			public Object doExecute(Connection conn, PreparedStatement ps, ResultSet rs) {
-				List list = null;
-				try {
-					ResultSetMetaData rsmd = rs.getMetaData();
-					//¶àĞĞ
-					while(rs.next()) {
-						if(list == null) {
-							list = new ArrayList();
-						}
-					
-						Object rowObj = clazz.newInstance();//µ÷ÓÃJavaBeanµÄÎŞ²ÎÊı¹¹ÔìÆ÷
-						
-						//¶àÁĞ
-						for(int i=0;i<rsmd.getColumnCount();i++) {
-							String columnName = rsmd.getColumnLabel(i+1);
-							Object columnValue = rs.getObject(i+1);
-							//µ÷ÓÃrowObj¶ÔÏóµÄsetUsernameµÄ·½·¨,½«columnValueµÄÖµÉèÖÃµ½JavaBeanÀïÃæ
-							ReflectUtils.invokeSet(rowObj, columnName, columnValue);
-							
-						}
-						list.add(rowObj);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return list; 
-				
-			}
-		});
-	
-	}
-	
-	/**
-	 * ²éÑ¯·µ»Øµ¥ĞĞ¼ÇÂ¼ ²¢½«ÕâĞĞ¼ÇÂ¼·â×°µ½clazzÖ¸¶¨µÄÀàµÄ¶ÔÏóÖĞÈ¥
-	 * @param sql	²éÑ¯Óï¾ä
-	 * @param clazz	·Ö×°Êı¾İµÄjavabeanµÄ¶ÔÏó
-	 * @param params sqlµÄ²ÎÊı
-	 * @return
-	 */
-	public Object queryUniqueRow(String sql, Class clazz, Object[] params){
+        Connection con = DBManager.getConn();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = con.prepareStatement(sql);
+            JDBCUtil.handleParams(ps, params);
+            rs = ps.executeQuery();
 
-		List list = queryRows(sql, clazz, params);
-		return list == null ? null : list.get(0);
-	
-	}
-	/**
-	 * ²éÑ¯·µ»ØÒ»¸öÖµ ²¢½«¸ÃÖµ·µ»Ø
-	 * @param sql	²éÑ¯Óï¾ä
-	 * @param clazz	·Ö×°Êı¾İµÄjavabeanµÄ¶ÔÏó
-	 * @param params sqlµÄ²ÎÊı
-	 * @return
-	 */
-	public Object queryValue(String sql, Object[] params){
-		
-		return executeQueryTemplate(sql, params, null, new CallBack() {
-			
-			@Override
-			public Object doExecute(Connection conn, PreparedStatement ps, ResultSet rs) {
-				Object value = null;
-				try {
-					while(rs.next()) {
-						value = rs.getObject(1);
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				return value;
-			}
-		});
-	}
-	/**
-	 * ²éÑ¯·µ»ØÒ»¸öÖµ ²¢½«¸ÃÖµ·µ»Ø
-	 * @param sql	²éÑ¯Óï¾ä
-	 * @param clazz	·Ö×°Êı¾İµÄjavabeanµÄ¶ÔÏó
-	 * @param params sqlµÄ²ÎÊı
-	 * @return
-	 */
-	public Number queryNumber(String sql, Object[] params){
 
-		return (Number) queryValue(sql, params);
-	
-	}
-	/**
-	 * ·ÖÒ³²éÑ¯
-	 * @param pageName
-	 * @param size
-	 * @return
-	 */
-	public abstract Object queryPagenate(int pageName,int size);
-	
+            //åªéœ€è¦æ”¹å†™è¿™ä¸€ä¸ªéƒ¨åˆ†å°±å¥½äº†
+            return back.doExecute(con, ps, rs);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            DBManager.close(ps, con);
+        }
+
+
+    }
+
+    /**
+     * æ‰§è¡ŒDMLè¯­å¥
+     *
+     * @param sql
+     * @param params
+     * @return æ‰§è¡Œsqlè¯­å¥åå½±å“è®°å½•çš„è¡Œæ•°
+     */
+    public int executeDML(String sql, Object[] params) {
+
+        Connection con = DBManager.getConn();
+        int count = 0;
+        PreparedStatement ps = null;
+        try {
+            ps = con.prepareStatement(sql);
+
+            JDBCUtil.handleParams(ps, params);
+
+            count = ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBManager.close(ps, con);
+        }
+        return count;
+
+    }
+
+    /**
+     * å°†å¯¹è±¡å­˜å‚¨ åˆ°æ•°æ®åº“ä¸­
+     * æŠŠå¯¹è±¡
+     *
+     * @param obj è¦å­˜å‚¨çš„å¯¹è±¡
+     */
+    public void insert(Object obj) {
+
+        //obj-->è¡¨ä¸­ insert into è¡¨æ˜ (id, name,pwd) values (?,?,?)
+        Class c = obj.getClass();
+        TableInfo ti = TableContext.poClassTableMap.get(c);
+        StringBuilder sql = new StringBuilder("insert into " + ti.getName() + " (");
+        Field[] fs = c.getDeclaredFields();
+        List<Object> params = new ArrayList<Object>();//å­˜æ”¾å‚æ•°
+
+        for (Field elem : fs) {
+            String fieldName = elem.getName();
+            Object fieldValue = ReflectUtils.invokeGet(fieldName, obj);
+
+            if (fieldValue != null) {
+                sql.append(fieldName + ",");
+                params.add(fieldValue);
+            }
+
+        }
+
+        sql.setCharAt(sql.length() - 1, ')');
+        sql.append("values (");
+        for (int i = 0; i < params.size(); i++) {
+            sql.append("?,");
+        }
+        sql.setCharAt(sql.length() - 1, ')');
+        executeDML(sql.toString(), params.toArray());
+
+    }
+
+    /**
+     * åˆ é™¤clazzç±»å¯¹åº”çš„è¡¨ä¸­çš„è®°å½•(æŒ‡å®šä¸»é”®å€¼idçš„è®°å½•)
+     *
+     * @param clazz è·Ÿè¡¨å¯¹åº”çš„ç±»çš„å¯¹è±¡
+     * @param id    ä¸»é”®çš„å€¼
+     */
+    public int delete(Class clazz, Object id) {
+
+        //Emp.class,2 --> delete form emp where id =2
+
+        //ä¸€ç›´å¯¹è±¡æ‰¾tableInfo
+        TableInfo ti = TableContext.poClassTableMap.get(clazz);
+        ColumnInfo onlyPriKey = ti.getOnlyPriKey();
+
+        String sql = "delete from " + ti.getName() + " where " + onlyPriKey.getName() + "=? ";
+        return executeDML(sql, new Object[]{id});
+
+    }
+
+    /**
+     * åˆ é™¤æ•°æ®åº“ä¸­çš„å¯¹åº”è®°å½•
+     *
+     * @param obj
+     */
+    public int delete(Object obj) {
+
+        Class clazz = obj.getClass();
+        TableInfo ti = TableContext.poClassTableMap.get(clazz);
+        ColumnInfo onlyPriKey = ti.getOnlyPriKey();
+
+        //é€šè¿‡åå°„æœºåˆ¶ è°ƒç”¨å±æ€§å¯¹åº”çš„set getæ–¹æ³•
+        Object priKeyValue = ReflectUtils.invokeGet(onlyPriKey.getName(), obj);
+        return delete(clazz, priKeyValue);
+    }
+
+    /**
+     * æ ¹æ®å¯¹è±¡å¯¹åº”çš„è®°å½•,å¹¶ä¸”åªæ›´æ–°æŒ‡å®šå­—æ®µçš„å€¼
+     *
+     * @param obj
+     * @param fieldNames
+     * @return
+     */
+    public int update(Object obj, String[] fieldNames) {
+
+        //obj (name,pwd)-->update tablename set name=?,pwd=? where id=?
+        Class c = obj.getClass();
+        TableInfo ti = TableContext.poClassTableMap.get(c);
+        StringBuilder sql = new StringBuilder("update " + ti.getName() + " set ");
+        List<Object> params = new ArrayList<Object>();//å­˜æ”¾å‚æ•°
+        ColumnInfo priKey = ti.getOnlyPriKey();
+
+        for (String f : fieldNames) {
+            Object fvalue = ReflectUtils.invokeGet(f, obj);
+            params.add(fvalue);//ç»™å±æ€§èµ‹å€¼
+            sql.append(f + "=?,");
+        }
+        params.add(ReflectUtils.invokeGet(priKey.getName(), obj));
+
+        sql.setCharAt(sql.length() - 1, ' ');
+        sql.append("where ");
+        sql.append(priKey.getName() + "=? ");
+        System.out.println(sql.toString());
+        return executeDML(sql.toString(), params.toArray());
+
+    }
+
+    /**
+     * æŸ¥è¯¢è¿”å›å¤šè¡Œè®°å½• å¹¶å°†æ¯è¡Œè®°å½•å°è£…åˆ°clazzæŒ‡å®šçš„ç±»çš„å¯¹è±¡ä¸­å»
+     *
+     * @param sql    æŸ¥è¯¢è¯­å¥
+     * @param clazz  åˆ†è£…æ•°æ®çš„javabeançš„å¯¹è±¡
+     * @param params sqlçš„å‚æ•°
+     * @return
+     */
+    public List queryRows(final String sql, final Class clazz, final Object[] params) {
+
+
+        return (List) executeQueryTemplate(sql, params, clazz, new CallBack() {
+
+            @Override
+            public Object doExecute(Connection conn, PreparedStatement ps, ResultSet rs) {
+                List list = null;
+                try {
+                    ResultSetMetaData rsmd = rs.getMetaData();
+                    //å¤šè¡Œ
+                    while (rs.next()) {
+                        if (list == null) {
+                            list = new ArrayList();
+                        }
+
+                        Object rowObj = clazz.newInstance();//è°ƒç”¨JavaBeançš„æ— å‚æ•°æ„é€ å™¨
+
+                        //å¤šåˆ—
+                        for (int i = 0; i < rsmd.getColumnCount(); i++) {
+                            String columnName = rsmd.getColumnLabel(i + 1);
+                            Object columnValue = rs.getObject(i + 1);
+                            //è°ƒç”¨rowObjå¯¹è±¡çš„setUsernameçš„æ–¹æ³•,å°†columnValueçš„å€¼è®¾ç½®åˆ°JavaBeané‡Œé¢
+                            ReflectUtils.invokeSet(rowObj, columnName, columnValue);
+
+                        }
+                        list.add(rowObj);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return list;
+
+            }
+        });
+
+    }
+
+    /**
+     * æŸ¥è¯¢è¿”å›å•è¡Œè®°å½• å¹¶å°†è¿™è¡Œè®°å½•å°è£…åˆ°clazzæŒ‡å®šçš„ç±»çš„å¯¹è±¡ä¸­å»
+     *
+     * @param sql    æŸ¥è¯¢è¯­å¥
+     * @param clazz  åˆ†è£…æ•°æ®çš„javabeançš„å¯¹è±¡
+     * @param params sqlçš„å‚æ•°
+     * @return
+     */
+    public Object queryUniqueRow(String sql, Class clazz, Object[] params) {
+
+        List list = queryRows(sql, clazz, params);
+        return list == null ? null : list.get(0);
+
+    }
+
+    /**
+     * æŸ¥è¯¢è¿”å›ä¸€ä¸ªå€¼ å¹¶å°†è¯¥å€¼è¿”å›
+     *
+     * @param sql    æŸ¥è¯¢è¯­å¥
+     * @param params sqlçš„å‚æ•°
+     * @return
+     */
+    public Object queryValue(String sql, Object[] params) {
+
+        return executeQueryTemplate(sql, params, null, (conn, ps, rs) -> {
+            Object value = null;
+            try {
+                while (rs.next()) {
+                    value = rs.getObject(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return value;
+        });
+    }
+
+    /**
+     * æŸ¥è¯¢è¿”å›ä¸€ä¸ªå€¼ å¹¶å°†è¯¥å€¼è¿”å›
+     *
+     * @param sql    æŸ¥è¯¢è¯­å¥
+     * @param params sqlçš„å‚æ•°
+     * @return
+     */
+    public Number queryNumber(String sql, Object[] params) {
+
+        return (Number) queryValue(sql, params);
+
+    }
+
+    /**
+     * åˆ†é¡µæŸ¥è¯¢
+     *
+     * @param pageName
+     * @param size
+     * @return
+     */
+    public abstract Object queryPagenate(int pageName, int size);
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

@@ -1,7 +1,7 @@
 package sorm.core;
 /**
- * mysqlÊı¾İ¿âÀàĞÍºÍjavaÊı¾İÀàĞÍµÄ×ª»»
- * @author ËåºèºÆ
+ * mysqlæ•°æ®åº“ç±»å‹å’Œjavaæ•°æ®ç±»å‹çš„è½¬æ¢
+ * @author éš‹é¸¿æµ©
  *
  */
 public class MysqlTypeConvertor implements TypeConvertor{
@@ -39,7 +39,6 @@ public class MysqlTypeConvertor implements TypeConvertor{
 
 	@Override
 	public String javaType2DatabaseType(String javaDataType) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

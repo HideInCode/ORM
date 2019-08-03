@@ -4,75 +4,69 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ´æ´¢±íĞÅÏ¢
- * @author ËåºèºÆ
+ * å­˜å‚¨è¡¨ä¿¡æ¯
  *
+ * @author éš‹é¸¿æµ©
  */
 public class TableInfo {
-	/**
-	 * ±íÃû
-	 */
-	private String name;
-	
-	private Map<String,ColumnInfo> columns;
-	
-	/**
-	 *Î¨Ò»Ö÷¼ü(Ä¿Ç°Ö»ÄÜ´¦Àí±íÖĞÖ»ÓĞÒ»¸öÖ÷¼üµÄÇé¿ö) 
-	 */
-	private ColumnInfo onlyPriKey;
-	
-	private List<ColumnInfo> priKeys;//ÁªºÏÖ÷¼ü
-	
-	public List<ColumnInfo> getPriKeys() {
-		return priKeys;
-	}
+    /**
+     * è¡¨å
+     */
+    private String name;
+
+    private Map<String, ColumnInfo> columns;
+
+    /**
+     * å”¯ä¸€ä¸»é”®(ç›®å‰åªèƒ½å¤„ç†è¡¨ä¸­åªæœ‰ä¸€ä¸ªä¸»é”®çš„æƒ…å†µ)
+     */
+    private ColumnInfo onlyPriKey;
+
+    private List<ColumnInfo> priKeys; // è”åˆä¸»é”®
+
+    public List<ColumnInfo> getPriKeys() {
+        return priKeys;
+    }
 
 
-
-	public void setPriKeys(List<ColumnInfo> priKeys) {
-		this.priKeys = priKeys;
-	}
-
+    public void setPriKeys(List<ColumnInfo> priKeys) {
+        this.priKeys = priKeys;
+    }
 
 
-	public TableInfo() {
-		// TODO Auto-generated constructor stub
-	}
-
-	
-
-	public TableInfo(String name, List<ColumnInfo> priKeys, Map<String, ColumnInfo> columns) {
-		super();
-		this.name = name;
-		this.columns = columns;
-		this.priKeys = priKeys;
-	}
+    public TableInfo() {
+    }
 
 
+    public TableInfo(String name, List<ColumnInfo> priKeys, Map<String, ColumnInfo> columns) {
+        super();
+        this.name = name;
+        this.columns = columns;
+        this.priKeys = priKeys;
+    }
 
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Map<String, ColumnInfo> getColumns() {
-		return columns;
-	}
+    public Map<String, ColumnInfo> getColumns() {
+        return columns;
+    }
 
-	public void setColumns(Map<String, ColumnInfo> columns) {
-		this.columns = columns;
-	}
+    public void setColumns(Map<String, ColumnInfo> columns) {
+        this.columns = columns;
+    }
 
-	public ColumnInfo getOnlyPriKey() {
-		return onlyPriKey;
-	}
+    public ColumnInfo getOnlyPriKey() {
+        return onlyPriKey;
+    }
 
-	public void setOnlyPriKey(ColumnInfo onlyPriKey) {
-		this.onlyPriKey = onlyPriKey;
-	}
-	
+    public void setOnlyPriKey(ColumnInfo onlyPriKey) {
+        this.onlyPriKey = onlyPriKey;
+    }
+
 }

@@ -1,33 +1,31 @@
 package sorm.bean;
 /**
- * ·â×°ÁË±íÖĞÒ»¸ö×Ö¶ÎµÄĞÅÏ¢
- * @author ËåºèºÆ
+ * å°è£…äº†è¡¨ä¸­ä¸€ä¸ªå­—æ®µçš„ä¿¡æ¯
+ * @author éš‹é¸¿æµ©
  *	@version 0.1
  */
 public class ColumnInfo {
 	/**
-	 * ×Ö¶ÎÃû³Æ
+	 * å­—æ®µåç§°
 	 */
 	private String name;
 	/**
-	 * ×Ö¶ÎµÄÊı¾İÀàĞÍ
+	 * å­—æ®µçš„æ•°æ®ç±»å‹
 	 */
 	private String dataType;
 	
 	/**
-	 * ×Ö¶ÎµÄ¼üÖµ(0ÆÕÍ¨		1Ö÷¼ü	2Íâ¼ü)
+	 * å­—æ®µçš„é”®ç±»å‹(0æ™®é€š 1ä¸»é”®	2å¤–é”®)
 	 */
 	private int keyType;
 
 	public ColumnInfo(String name, String dataType, int keyType) {
-		super();
 		this.name = name;
 		this.dataType = dataType;
 		this.keyType = keyType;
 	}
 	
 	public ColumnInfo() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getName() {

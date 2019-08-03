@@ -17,23 +17,23 @@ import sorm.core.TableContext;
 import sorm.core.TypeConvertor;
 
 /**
- * ·â×°ÁËjavaÎÄ¼ş³£ÓÃ²Ù×÷
- * @author ËåºèºÆ
+ * å°è£…äº†javaæ–‡ä»¶å¸¸ç”¨æ“ä½œ
+ * @author éš‹é¸¿æµ©
  *
  */
 public class JavaFileUtils {
 	
 	/**
-	 * ¸ù¾İ×Ö¶ÎĞÅÏ¢Éú³ÉjavaÊôĞÔĞÅÏ¢:varchar username --> private String name;ÒÔ¼°ÏàÓ¦µÄsetget·½·¨
-	 * @param column ×Ö¶ÎĞÅÏ¢
-	 * @param convertor ÀàĞÍ×ª»¯Æ÷
-	 * @return JavaÊôĞÔºÍsetget·½·¨Ô´Âë
+	 * æ ¹æ®å­—æ®µä¿¡æ¯ç”Ÿæˆjavaå±æ€§ä¿¡æ¯:varchar username --> private String name;ä»¥åŠç›¸åº”çš„setgetæ–¹æ³•
+	 * @param column å­—æ®µä¿¡æ¯
+	 * @param convertor ç±»å‹è½¬åŒ–å™¨
+	 * @return Javaå±æ€§å’Œsetgetæ–¹æ³•æºç 
 	 */
 	public static JavaFieldGetSet createFieldGetSetSRC(ColumnInfo column, TypeConvertor convertor) {
 		JavaFieldGetSet jfgs = new JavaFieldGetSet();
 		
 		String javaFieldType = convertor.datebaseType2JavaType(column.getDataType());
-		//Í¨¹ıÆ´½Ó×Ö·û´®Éú³Éjava´úÂë
+		//é€šè¿‡æ‹¼æ¥å­—ç¬¦ä¸²ç”Ÿæˆjavaä»£ç 
 		jfgs.setFieldInfo("\tprivate "+javaFieldType+" "+column.getName()+";\n");
 		
 		//public String getUsername(){return username;}
@@ -53,10 +53,10 @@ public class JavaFileUtils {
 	} 
 	
 	/**
-	 * ¸ù¾İ±íĞÅÏ¢Éú³ÉjavaÀàµÄÔ´´úÂë
-	 * @param ti ±íĞÅÏ¢
-	 * @param tc Êı¾İÀàµÄ×ª»¯Æ÷
-	 * @return javaÀàµÄÔ´´úÂë
+	 * æ ¹æ®è¡¨ä¿¡æ¯ç”Ÿæˆjavaç±»çš„æºä»£ç 
+	 * @param ti è¡¨ä¿¡æ¯
+	 * @param tc æ•°æ®ç±»çš„è½¬åŒ–å™¨
+	 * @return javaç±»çš„æºä»£ç 
 	 */
 	public static String createJavaSrc(TableInfo ti, TypeConvertor tc){
 
@@ -66,7 +66,7 @@ public class JavaFileUtils {
 			lists.add(createFieldGetSetSRC(c, tc));
 		}
 		
-		//Æ´½Ó¸öÀà³öÀ´
+		//æ‹¼æ¥ä¸ªç±»å‡ºæ¥
 		StringBuilder src = new StringBuilder();
 		//package
 		src.append("package "+DBManager.getConf().getPoPackage()+";\n\n");
@@ -74,17 +74,17 @@ public class JavaFileUtils {
 		
 		src.append("import java.sql.*;\n");
 		src.append("import java.util.*;\n\n");
-		//ÀàÉùÃ÷Óï¾ä
+		//ç±»å£°æ˜è¯­å¥
 		src.append("public class "+StringUtils.firstChar2UpperCase(ti.getName()+" {\n\n"));
 		
 		
-		//ÊôĞÔÁĞ±í
+		//å±æ€§åˆ—è¡¨
 		for(JavaFieldGetSet f : lists) {
 			src.append(f.getFieldInfo());
 		}
 		src.append("\n\n");
 		
-		//set get ·½·¨
+		//set get æ–¹æ³•
 		for(JavaFieldGetSet f : lists) {
 			src.append(f.getGetInfo());
 		}
@@ -96,7 +96,7 @@ public class JavaFileUtils {
 		src.append("\n\n");
 		
 		
-		//½áÊø
+		//ç»“æŸ
 		src.append("}\n");
 		//System.out.println(src);
 		return src.toString();
@@ -110,14 +110,14 @@ public class JavaFileUtils {
 		
 		File f = new File(srcPath + packagePath);
 		//System.out.println(f.getAbsolutePath());
-		if(!f.exists()) {//Ö¸¶¨Ä¿Â¼²»´æÔÚ ½¨Ò»¸ö
+		if(!f.exists()) {//æŒ‡å®šç›®å½•ä¸å­˜åœ¨ å»ºä¸€ä¸ª
 			f.mkdirs();
 		}
 		
 		try {
 			bw = new BufferedWriter(new FileWriter(f.getAbsoluteFile()+"/"+StringUtils.firstChar2UpperCase(ti.getName())+".java"));
 			bw.write(src);
-			System.out.println("½¨Á¢±í"+ti.getName()+"¶ÔÓ¦µÄjavaÀà"+StringUtils.firstChar2UpperCase(ti.getName())+".java");
+			System.out.println("å»ºç«‹è¡¨"+ti.getName()+"å¯¹åº”çš„javaç±»"+StringUtils.firstChar2UpperCase(ti.getName())+".java");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

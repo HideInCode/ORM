@@ -4,13 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * ·â×°jdbc²éÑ¯³£ÓÃµÄ²Ù×÷
- * @author ËåºèºÆ
+ * å°è£…jdbcæŸ¥è¯¢å¸¸ç”¨çš„æ“ä½œ
+ * @author éš‹é¸¿æµ©
  *
  */
 public class JDBCUtil {
 	/**
-	 * ¸øsqlÉèÖÃ²ÎÊı
+	 * ç»™sqlè®¾ç½®å‚æ•°
 	 * @param ps
 	 * @param params
 	 */

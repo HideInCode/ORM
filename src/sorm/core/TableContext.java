@@ -1,4 +1,5 @@
 package sorm.core;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -6,117 +7,116 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-  
+
 import sorm.bean.ColumnInfo;
 import sorm.bean.TableInfo;
 import sorm.util.JavaFileUtils;
 import sorm.util.StringUtils;
-  
+
 /**
- * ¸ºÔğ»ñÈ¡¹ÜÀíÊı¾İ¿âËùÓĞ±í½á¹¹ºÍÀà½á¹¹µÄ¹ØÏµ£¬²¢¿ÉÒÔ¸ù¾İ±í½á¹¹Éú³ÉÀà½á¹¹¡£
- * Ö±½ÓÈ¥¹ÙÍøÉÏcv
- * @author gaoqi www.sxt.cn
+ * è´Ÿè´£è·å–ç®¡ç†æ•°æ®åº“æ‰€æœ‰è¡¨ç»“æ„å’Œç±»ç»“æ„çš„å…³ç³»ï¼Œå¹¶å¯ä»¥æ ¹æ®è¡¨ç»“æ„ç”Ÿæˆç±»ç»“æ„ã€‚
  *
+ * @author éš‹é¸¿æµ©
  */
 public class TableContext {
-  
-/**
- * ±íÃûÎªkey£¬±íĞÅÏ¢¶ÔÏóÎªvalue
- */
-public static  Map<String,TableInfo>  
-tables = new HashMap<String,TableInfo>();
-/**
- * ½«poµÄclass¶ÔÏóºÍ±íĞÅÏ¢¶ÔÏó¹ØÁªÆğÀ´£¬±ãÓÚÖØÓÃ£¡
- */
-public static  Map<Class,TableInfo>  
-poClassTableMap = new HashMap<Class,TableInfo>();
-private TableContext(){
- 
-}
-static {
-	try {
-	//³õÊ¼»¯»ñµÃ±íµÄĞÅÏ¢
-	Connection con = DBManager.getConn();
-	DatabaseMetaData dbmd = con.getMetaData(); 
-	 
-	ResultSet tableRet = dbmd.getTables(null,
-	 "%","%",new String[]{"TABLE"}); 
-	 
-	while(tableRet.next()){
-	String tableName = (String) 
-	tableRet.getObject("TABLE_NAME");
-	 
-	TableInfo ti = new TableInfo(tableName, 
-	new ArrayList<ColumnInfo>()
-	,new HashMap<String, ColumnInfo>());
-	tables.put(tableName, ti);
-	 
-	ResultSet set = dbmd.getColumns(null, "%", tableName, "%");  
-	//²éÑ¯±íÖĞµÄËùÓĞ×Ö¶Î
-	while(set.next()){
-	ColumnInfo ci = new ColumnInfo(set.getString("COLUMN_NAME"), 
-	set.getString("TYPE_NAME"), 0);
-	ti.getColumns().put(set.getString("COLUMN_NAME"), ci);
-	}
-	 
-	ResultSet set2 = dbmd.getPrimaryKeys(null, "%", tableName);  
-	//²éÑ¯t_user±íÖĞµÄÖ÷¼ü
-	while(set2.next()){
-	ColumnInfo ci2 = (ColumnInfo) 
-	ti.getColumns().get(set2.getObject("COLUMN_NAME"));
-	ci2.setKeyType(1);  
-	//ÉèÖÃÎªÖ÷¼üÀàĞÍ
-	ti.getPriKeys().add(ci2);
-	}
-	 
-	if(ti.getPriKeys().size()>0)
-	{  //È¡Î¨Ò»Ö÷¼ü¡£¡£·½±ãÊ¹ÓÃ¡£Èç¹ûÊÇÁªºÏÖ÷¼ü¡£ÔòÎª¿Õ£¡
-	ti.setOnlyPriKey(ti.getPriKeys().get(0));
-	}
-	}
-	} catch (SQLException e) {
-	e.printStackTrace();
-	}  
-	
-	//Ã¿´ÎÆô¶¯¶¼°üº¬×îĞÂµÄÊôĞÔ
-	updateJavaPOFile();
-	
-	//¼ÓÔØpo°üÏÂµÄËùÓĞµÄÀà ±ãÓÚ¸´ÓÃ
-	loadPOTables();
-}
 
-/**
- * ¸ù¾İ±í½á¹¹ ¸üĞÂpo°üÏÂµÄjavaÀà
- * ÊµÏÖÁË±í½á¹¹µ½Àà½á¹¹ ĞÂÊôĞÔ»á¸üĞÂµ½ÀàÀïÃæÈ¥
- */
-public static void updateJavaPOFile() {
-	Map<String, TableInfo> map = TableContext.tables;
-	
-	for(TableInfo ti : map.values()) {
-		JavaFileUtils.createJavaPOFile(ti, new MysqlTypeConvertor());
-	}
-}
+    /**
+     * è¡¨åä¸ºkeyï¼Œè¡¨ä¿¡æ¯å¯¹è±¡ä¸ºvalue
+     */
+    public static Map<String, TableInfo>
+            tables = new HashMap<>();
+    /**
+     * å°†poçš„classå¯¹è±¡å’Œè¡¨ä¿¡æ¯å¯¹è±¡å…³è”èµ·æ¥ï¼Œä¾¿äºé‡ç”¨ï¼
+     */
+    public static Map<Class, TableInfo>
+            poClassTableMap = new HashMap<>();
 
-/**
- * ¼ÓÔØpo°üÏÂµÄÀà 
- */
-public static void loadPOTables() {
-	
-	for(TableInfo ti : tables.values()) {
-		
-		try {
-			Class c = Class.forName(DBManager.getConf().getPoPackage()+"."+StringUtils.firstChar2UpperCase(ti.getName()));
-			poClassTableMap.put(c, ti);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-}
+    private TableContext() {
 
-public static void main(String[] args) {
- Map<String,TableInfo>  tables = TableContext.tables;
- System.out.println(tables);
-}
-  
+    }
+
+    static {
+        try {
+            //åˆå§‹åŒ–è·å¾—è¡¨çš„ä¿¡æ¯
+            Connection connection = DBManager.getConn();
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet resultSet = metaData.getTables(null,
+                    null, null, new String[]{"TABLE"});
+
+            while (resultSet.next()) {
+                String tableName = (String)
+                        resultSet.getObject("TABLE_NAME");
+                resultSet.getString("")
+                System.out.println(tableName);
+                TableInfo tableInfo = new TableInfo(tableName,
+                        new ArrayList<>()
+                        , new HashMap<>());
+                tables.put(tableName, tableInfo);
+
+                ResultSet set = metaData.getColumns(null, "%", tableName, "%");
+                //æŸ¥è¯¢è¡¨ä¸­çš„æ‰€æœ‰å­—æ®µ
+                while (set.next()) {
+                    ColumnInfo ci = new ColumnInfo(set.getString("COLUMN_NAME"),
+                            set.getString("TYPE_NAME"), 0);
+                    tableInfo.getColumns().put(set.getString("COLUMN_NAME"), ci);
+                }
+
+                ResultSet set2 = metaData.getPrimaryKeys(null, "%", tableName);
+                //æŸ¥è¯¢t_userè¡¨ä¸­çš„ä¸»é”®
+                while (set2.next()) {
+                    ColumnInfo ci2 = tableInfo.getColumns().get(set2.getObject("COLUMN_NAME"));
+                    ci2.setKeyType(1);
+                    //è®¾ç½®ä¸ºä¸»é”®ç±»å‹
+                    tableInfo.getPriKeys().add(ci2);
+                }
+
+                if (tableInfo.getPriKeys().size() > 0) {  //å–å”¯ä¸€ä¸»é”®ã€‚ã€‚æ–¹ä¾¿ä½¿ç”¨ã€‚å¦‚æœæ˜¯è”åˆä¸»é”®ã€‚åˆ™ä¸ºç©ºï¼
+                    tableInfo.setOnlyPriKey(tableInfo.getPriKeys().get(0));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        //æ¯æ¬¡å¯åŠ¨éƒ½åŒ…å«æœ€æ–°çš„å±æ€§
+        updateJavaPOFile();
+
+        //åŠ è½½poåŒ…ä¸‹çš„æ‰€æœ‰çš„ç±» ä¾¿äºå¤ç”¨
+        loadPOTables();
+    }
+
+    /**
+     * æ ¹æ®è¡¨ç»“æ„ æ›´æ–°poåŒ…ä¸‹çš„javaç±»
+     * å®ç°äº†è¡¨ç»“æ„åˆ°ç±»ç»“æ„ æ–°å±æ€§ä¼šæ›´æ–°åˆ°ç±»é‡Œé¢å»
+     */
+    public static void updateJavaPOFile() {
+        Map<String, TableInfo> map = TableContext.tables;
+
+        for (TableInfo ti : map.values()) {
+            JavaFileUtils.createJavaPOFile(ti, new MysqlTypeConvertor());
+        }
+    }
+
+    /**
+     * åŠ è½½poåŒ…ä¸‹çš„ç±»
+     */
+    public static void loadPOTables() {
+
+        for (TableInfo ti : tables.values()) {
+
+            try {
+                Class c = Class.forName(DBManager.getConf().getPoPackage() + "." + StringUtils.firstChar2UpperCase(ti.getName()));
+                poClassTableMap.put(c, ti);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public static void main(String[] args) {
+        Map<String, TableInfo> tables = TableContext.tables;
+        System.out.println(tables);
+    }
+
 }

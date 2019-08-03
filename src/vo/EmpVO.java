@@ -1,7 +1,7 @@
 package vo;
 /**
- * javaBean´æ·Å²éÑ¯½á¹û
- * @author ËåºèºÆ
+ * javaBeanå­˜æ”¾æŸ¥è¯¢ç»“æžœ
+ * @author éš‹é¸¿æµ©
  *
  */
 public class EmpVO {
@@ -27,7 +27,6 @@ public class EmpVO {
 	}
 	
 	public EmpVO() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public Integer getId() {

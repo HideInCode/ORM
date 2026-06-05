@@ -9,7 +9,7 @@ import sorm.core.DBManager;
 
 /**
  * 连接池的类
- * @author 隋鸿浩
+ * @author shh
  *
  */
 public class DBConnPool {

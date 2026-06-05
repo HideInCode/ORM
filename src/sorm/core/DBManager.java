@@ -15,7 +15,7 @@ import sorm.pool.DBConnPool;
  * 根据配置信息,维持连接对象的管理
  * 这里把配置文件通过这个类连接
  *
- * @author 隋鸿浩
+ * @author shh
  */
 public class DBManager {
     private static Configuration conf;
@@ -61,7 +61,13 @@ public class DBManager {
             Class.forName(conf.getDriver());
             return DriverManager.getConnection(conf.getUrl(), conf.getUser(), conf.getPwd());
 
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
+            System.err.println("数据库驱动加载失败: " + conf.getDriver());
+            System.err.println("请确保 mysql-connector-java.jar 已添加到项目依赖中");
+            e.printStackTrace();
+            return null;
+        } catch (SQLException e) {
+            System.err.println("数据库连接失败: " + conf.getUrl());
             e.printStackTrace();
             return null;
         }

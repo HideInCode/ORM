@@ -3,7 +3,7 @@ package sorm.core;
 /**
  * mysql数据库的查询
  *
- * @author 隋鸿浩
+ * @author shh
  */
 public class MysqlQuery extends Query {
 

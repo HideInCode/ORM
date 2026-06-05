@@ -5,11 +5,11 @@ import java.lang.reflect.Method;
 
 /**
  * 封装了反射常用的操作
- * @author 隋鸿浩
+ * @author shh
  *
  */
 public class ReflectUtils {
-	
+
 	/**
 	 * 调用obj对象对应的属性名的get方法
 	 * @param c
@@ -19,17 +19,17 @@ public class ReflectUtils {
 	 */
 	public static Object invokeGet(String fieldname, Object obj) {
 		//通过反射机制 调用属性对应的set get方法
-				try {
-					Class c = obj.getClass();
-					Method m = c.getDeclaredMethod("get"+StringUtils.firstChar2UpperCase(fieldname), null);
-					return m.invoke(obj, null);
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-					return null;
-				} 
+					try {
+						Class c = obj.getClass();
+						Method m = c.getDeclaredMethod("get"+StringUtils.firstChar2UpperCase(fieldname), (Class<?>[]) null);
+						return m.invoke(obj, (Object[]) null);
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						return null;
+					}
 	}
-	
+
 	public static void invokeSet(Object obj, String columnName,Object columnValue) {
 		try {
 			Class clazz = obj.getClass();
@@ -37,6 +37,6 @@ public class ReflectUtils {
 			m.invoke(obj, columnValue);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 }

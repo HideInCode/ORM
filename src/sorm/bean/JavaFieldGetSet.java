@@ -1,7 +1,7 @@
 package sorm.bean;
 /**
  * javabean的set和get方法
- * @author 隋鸿浩
+ * @author shh
  *
  */
 public class JavaFieldGetSet {

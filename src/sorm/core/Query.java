@@ -1,5 +1,10 @@
 package sorm.core;
 
+import sorm.bean.ColumnInfo;
+import sorm.bean.TableInfo;
+import sorm.util.JDBCUtil;
+import sorm.util.ReflectUtils;
+
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,16 +14,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sorm.bean.ColumnInfo;
-import sorm.bean.TableInfo;
-import sorm.util.JDBCUtil;
-import sorm.util.ReflectUtils;
-
 /**
  * 负责查询对外提供核心的类
  * 模板方法模式重构过
  *
- * @author 隋鸿浩
+ * @author shh
  */
 public abstract class Query implements Cloneable {
 
@@ -83,7 +83,7 @@ public abstract class Query implements Cloneable {
      */
     public void insert(Object obj) {
 
-        //obj-->表中 insert into 表明 (id, name,pwd) values (?,?,?)
+        //obj-->表中 insert into 表名 (id, name,pwd) values (?,?,?)
         Class c = obj.getClass();
         TableInfo ti = TableContext.poClassTableMap.get(c);
         StringBuilder sql = new StringBuilder("insert into " + ti.getName() + " (");
@@ -276,11 +276,25 @@ public abstract class Query implements Cloneable {
     /**
      * 分页查询
      *
-     * @param pageName
-     * @param size
+     * @param pageNum 页码(从1开始)
+     * @param size    每页大小
      * @return
      */
-    public abstract Object queryPagenate(int pageName, int size);
+    public abstract Object queryPagenate(int pageNum, int size);
+
+    /**
+     * 分页查询
+     *
+     * @param clazz   与表对应的类
+     * @param pageNum 页码(从1开始)
+     * @param size    每页大小
+     * @return 查询结果列表
+     */
+    public List queryPagenate(Class clazz, int pageNum, int size) {
+        TableInfo ti = TableContext.poClassTableMap.get(clazz);
+        String sql = "SELECT * FROM " + ti.getName() + " LIMIT ? OFFSET ?";
+        return queryRows(sql, clazz, new Object[]{size, (pageNum - 1) * size});
+    }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {

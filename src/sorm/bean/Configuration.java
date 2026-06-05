@@ -2,7 +2,7 @@ package sorm.bean;
 /**
  * 管理配置信息
  * 把配置文件的属性给这个类
- * @author 隋鸿浩
+ * @author shh
  *
  */
 public class Configuration {

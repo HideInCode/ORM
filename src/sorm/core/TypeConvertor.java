@@ -1,7 +1,7 @@
 package sorm.core;
 /**
  * 负责java数据类型和数据库数据类型的相互转换
- * @author 隋鸿浩
+ * @author shh
  *
  */
 public interface TypeConvertor {

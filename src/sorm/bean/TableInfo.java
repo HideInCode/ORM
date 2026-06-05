@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * 存储表信息
  *
- * @author 隋鸿浩
+ * @author shh
  */
 public class TableInfo {
     /**
@@ -20,8 +20,10 @@ public class TableInfo {
      * 唯一主键(目前只能处理表中只有一个主键的情况)
      */
     private ColumnInfo onlyPriKey;
-
-    private List<ColumnInfo> priKeys; // 联合主键
+    /**
+     * 联合主键
+     */
+    private List<ColumnInfo> priKeys;
 
     public List<ColumnInfo> getPriKeys() {
         return priKeys;

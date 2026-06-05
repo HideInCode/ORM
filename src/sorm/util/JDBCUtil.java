@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 /**
  * 封装jdbc查询常用的操作
- * @author 隋鸿浩
+ * @author shh
  *
  */
 public class JDBCUtil {

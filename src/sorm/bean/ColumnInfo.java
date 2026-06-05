@@ -1,7 +1,7 @@
 package sorm.bean;
 /**
  * 封装了表中一个字段的信息
- * @author 隋鸿浩
+ * @author shh
  *	@version 0.1
  */
 public class ColumnInfo {

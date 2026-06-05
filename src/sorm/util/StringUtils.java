@@ -1,7 +1,7 @@
 package sorm.util;
 /**
  * 封装了字符串常用的操作
- * @author 隋鸿浩
+ * @author shh
  *
  */
 public class StringUtils {

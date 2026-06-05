@@ -1,14 +1,17 @@
 package sorm.core;
 
+/**
+ * 查询工厂，使用原型模式创建Query实例
+ */
 public class QueryFactory {
-    private static QueryFactory prototypeObj;
+    private static Query prototypeObj;
 
     static {
         try {
             Class c = Class.forName(DBManager.getConf().getQueryClass());
-
-            prototypeObj = (QueryFactory) c.newInstance();
+            prototypeObj = (Query) c.newInstance();
         } catch (Exception e) {
+            System.err.println("加载Query实现类失败: " + DBManager.getConf().getQueryClass());
             e.printStackTrace();
         }
     }
